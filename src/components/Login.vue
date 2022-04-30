@@ -153,7 +153,23 @@ const register = () =>
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #b7d4eb;
+    background-image: linear-gradient(125deg, #55efc4, #81ecec, #74b9ff, #a29bfe, #fd79a8);
+    background-size: 400%;
+    animation: bganimation 10s infinite;
+}
+
+@keyframes bganimation {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 particles {
@@ -162,7 +178,6 @@ particles {
     width: 100%;
     background-size: cover;
     background-repeat: no-repeat;
-    /* background-image: url("../../assets/img/jiguang.jpeg"); */
 }
 
 .login {
