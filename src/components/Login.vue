@@ -114,7 +114,7 @@ const register = () =>
     <div class="background">
         <Particles id="tsparticles" class="particles" :options="particles" />
         <div class="login">
-            <div class="header">
+            <div class="login-header">
                 <img src="../assets/KnowledgeGraph.png" alt="图标" />
                 <span>Ti Knowledge Graph</span>
             </div>
@@ -190,18 +190,19 @@ particles {
     color: #fff;
 }
 
-.login .header {
+.login .login-header {
     display: flex;
     justify-content: space-between;
     height: 70px;
+    background-color: #18181c;
 }
 
-.login .header img {
+.login .login-header img {
     width: 70px;
     height: 70px;
 }
 
-.login .header span {
+.login .login-header span {
     display: inline-block;
     margin: auto 0;
     height: 28px;
@@ -237,6 +238,7 @@ particles {
 .login .content .rof .n-button {
     height: 18px;
     padding: 0px;
+    color: #1890ff;
 }
 
 .login .content .uoi {

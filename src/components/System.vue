@@ -58,6 +58,20 @@ const menuOptions: MenuOption[] = [
             ),
         key: '数据管理',
         icon: renderIcon(DataIcon)
+    },
+    {
+        label: () =>
+            h(
+                RouterLink,
+                {
+                    to: {
+                        // name: 'graph'
+                    }
+                },
+                { default: () => '数据展示' }
+            ),
+        key: '数据展示',
+        icon: renderIcon(DataIcon)
     }
 ]
 
@@ -86,21 +100,26 @@ const handleClose = (name: string) =>
 
 const handleUpdateValue = (value: string) =>
 {
-    if (value == "数据管理") {
+    if (value == "数据展示") {
         router.replace({
             name: "graph"
         })
     }
-    else {
+    else if (value == "用户管理") {
         router.replace({
             name: "users"
+        })
+    }
+    else {
+        router.replace({
+            name: "datas"
         })
     }
 }
 </script>
 
 <template>
-    <n-config-provider :theme="darkTheme">
+    <n-config-provider>
         <div class="sider">
             <div class="logo">
                 <img src="../assets/KnowledgeGraph.png" alt="图标" />
@@ -163,7 +182,7 @@ html,
 body,
 #app {
     height: 100%;
-    background-color: #101014;
+    background-color: #f5f8f7;
 }
 
 .n-config-provider {
@@ -174,7 +193,7 @@ body,
 
 .sider {
     width: 200px;
-    background-color: #18181c;
+    background-color: #fff;
 }
 
 .sider .logo {
@@ -210,9 +229,9 @@ body,
 
 .header {
     height: 100px;
-    /* display: flex;
-    flex-direction: column; */
-    background-color: #18181c;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
 }
 
 .header .line1 {
@@ -234,6 +253,7 @@ body,
     height: 50px;
     /* width: 100px; */
     margin-right: 10px;
+    color: #000;
 }
 
 .header .line1 .userinfo span {
@@ -258,11 +278,11 @@ body,
     margin: 15px;
     /* border: 1px solid #000; */
     border-radius: 10px;
-    background-color: #18181c;
+    background-color: #fff;
 }
 
 .footer {
     height: 20px;
-    background-color: #18181c;
+    background-color: #fff;
 }
 </style>

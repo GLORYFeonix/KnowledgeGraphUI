@@ -3,6 +3,7 @@ import Login from '../components/Login.vue'
 import System from '../components/System.vue'
 import Users from '../components/Users.vue'
 import Graph from '../components/Graph.vue'
+import Datas from '../components/Datas.vue'
 
 // const routes: Array<RouteRecordRaw> = [
 //     {
@@ -46,6 +47,11 @@ const router = createRouter({
                     path: "/graph/:name",
                     name: "graph",
                     component: Graph
+                },
+                {
+                    path: "/graph/:name",
+                    name: "datas",
+                    component: Datas
                 }
             ]
         }

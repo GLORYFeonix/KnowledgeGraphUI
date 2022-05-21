@@ -3,7 +3,7 @@ import { darkTheme, NConfigProvider, NDialogProvider, NMessageProvider } from 'n
 </script>
 
 <template>
-    <n-config-provider abstract :theme="darkTheme">
+    <n-config-provider abstract>
         <n-dialog-provider>
             <n-message-provider>
                 <router-view></router-view>
