@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { h, onMounted, reactive, ref } from 'vue'
 import axios from 'axios'
-import { NButton, useMessage, NDataTable, DataTableColumns, NModal, NInput, NIcon, NUpload } from 'naive-ui'
+import { NButton, useMessage, NDataTable, DataTableColumns, NModal, NInput, NIcon, NUpload, NSpin } from 'naive-ui'
 import { SearchRound as Search } from '@vicons/material'
 
 let showAdd = ref(false)
 let showDelete = ref(false)
 let showUpdate = ref(false)
+let showSpin = ref(false)
 let source = ref("")
 let kind = ref("")
 let target = ref("")
+let sentence = ref("")
 type Relationship = {
     source: string
     kind: string
@@ -79,6 +81,7 @@ const columns = createColumns({
     Delete(row: Relationship)
     {
         source.value = row.source
+        target.value = row.target
         showDelete.value = true
     }
 })
@@ -98,21 +101,36 @@ const AddData = () =>
     var _source = source.value
     var _kind = kind.value
     var _target = target.value
-    // axios.post(`https://localhost:7183/Users/CreateUser?userName=${_userName}&password=${_password}&name=${_name}`)
+    var _sentence = sentence.value
+
+    if (_kind != "") {
+        axios.post(`https://localhost:7183/Knowledge/AddRelation?SourceNodeName=${_source}&Type=${_kind}&TargetNodeName=${_target}`)
+    }
+    else if (_source != "") {
+        axios.post(`https://localhost:7183/Knowledge/AddNode?name=${_source}`)
+    }
+    if (_sentence != "") {
+        showSpin.value = true
+        axios.post(`https://localhost:7183/Knowledge/SingleSentence?Sentence=${_sentence}`).then(function ()
+        {
+            showSpin.value = false
+        })
+    }
     RefreshData()
 }
 const DeleteData = () =>
 {
-    // var _userName = userName.value
-    // axios.delete(`https://localhost:7183/Users/DeleteUserByUserName?userName=${_userName}`)
+    var _source = source.value
+    var _target = target.value
+    axios.delete(`https://localhost:7183/Knowledge/Delete?SourceNodeName=${_source}&TargetNodeName=${_target}`)
     RefreshData()
 }
 const UpdateData = () =>
 {
-    // var _userName = userName.value
-    // var _password = password.value
-    // var _name = name.value
-    // axios.put(`https://localhost:7183/Users/UpdataUserByUserName?userName=${_userName}&password=${_password}&name=${_name}`)
+    var _source = source.value
+    var _kind = kind.value
+    var _target = target.value
+    axios.put(`https://localhost:7183/Knowledge/Update?SourceNodeName=${_source}&Type=${_kind}&TargetNodeName=${_target}`)
     RefreshData()
 }
 const SearchData = () =>
@@ -140,39 +158,42 @@ const RefreshData = () =>
 </script>
 
 <template>
-    <div class="datas-header">
-        <div class="left">
-            <n-input clearable placeholder="源头" v-model:value="source" />
-            <n-input clearable placeholder="目标" v-model:value="target" />
-            <n-button text style="font-size: 24px" @click="SearchData">
-                <n-icon>
-                    <Search />
-                </n-icon>
-            </n-button>
+    <n-spin size="large" description="操作中，请稍后" :show="showSpin">
+        <div class="datas-header">
+            <div class="left">
+                <n-input clearable placeholder="源头" v-model:value="source" />
+                <n-input clearable placeholder="目标" v-model:value="target" />
+                <n-button text style="font-size: 24px" @click="SearchData">
+                    <n-icon>
+                        <Search />
+                    </n-icon>
+                </n-button>
+            </div>
+            <div class="right">
+                <n-upload action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f" accept=".txt">
+                    <n-button type="info" ghost>导入文件</n-button>
+                </n-upload>
+                <n-button type="info" ghost @click="showAdd = true">新增</n-button>
+            </div>
         </div>
-        <div class="right">
-            <n-upload action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f" accept=".txt">
-                <n-button type="info" ghost>导入文件</n-button>
-            </n-upload>
-            <n-button type="info" ghost @click="showAdd = true">新增</n-button>
-        </div>
-    </div>
-    <n-data-table :columns="columns" :data="data" :pagination=false :striped="false" />
-    <n-modal v-model:show="showAdd" preset="dialog" title="添加新数据" :showIcon=true positive-text="确定！" negative-text="再想想"
-        @positive-click="AddData">
-        <n-input type="text" placeholder="请输入源头" v-model:value="source" />
-        <n-input type="password" placeholder="请输入种类" show-password-on="mousedown" v-model:value="kind" />
-        <n-input type="text" placeholder="请输入目标" v-model:value="target" />
-    </n-modal>
-    <n-modal v-model:show="showDelete" preset="dialog" title="真的要删除吗？" :showIcon=true positive-text="确定！"
-        negative-text="再想想" @positive-click="DeleteData">
-    </n-modal>
-    <n-modal v-model:show="showUpdate" preset="dialog" title="请谨慎修改" :showIcon=true positive-text="确定！"
-        negative-text="再想想" @positive-click="UpdateData">
-        <n-input type="text" placeholder="请输入源头" :disabled=true v-model:value="source" />
-        <n-input type="password" placeholder="请输入种类" show-password-on="mousedown" v-model:value="kind" />
-        <n-input type="text" placeholder="请输入目标" v-model:value="target" />
-    </n-modal>
+        <n-data-table :columns="columns" :data="data" :pagination=false :striped="false" />
+        <n-modal v-model:show="showAdd" preset="dialog" title="添加新数据" :showIcon=true positive-text="确定！"
+            negative-text="再想想" @positive-click="AddData">
+            <n-input type="text" placeholder="请输入源头" v-model:value="source" />
+            <n-input type="text" placeholder="请输入种类" show-password-on="mousedown" v-model:value="kind" />
+            <n-input type="text" placeholder="请输入目标" v-model:value="target" />
+            <n-input type="text" placeholder="或者给我一句话" v-model:value="sentence" />
+        </n-modal>
+        <n-modal v-model:show="showDelete" preset="dialog" title="真的要删除吗？" :showIcon=true positive-text="确定！"
+            negative-text="再想想" @positive-click="DeleteData">
+        </n-modal>
+        <n-modal v-model:show="showUpdate" preset="dialog" title="请谨慎修改" :showIcon=true positive-text="确定！"
+            negative-text="再想想" @positive-click="UpdateData">
+            <n-input type="text" placeholder="请输入源头" :disabled=true v-model:value="source" />
+            <n-input type="text" placeholder="请输入种类" show-password-on="mousedown" v-model:value="kind" />
+            <n-input type="text" placeholder="请输入目标" :disabled=true v-model:value="target" />
+        </n-modal>
+    </n-spin>
 </template>
 
 <style scoped>

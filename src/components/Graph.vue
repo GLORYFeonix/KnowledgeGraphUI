@@ -2,13 +2,17 @@
 import { onMounted, reactive, ref } from 'vue'
 import * as echarts from 'echarts'
 import axios from 'axios'
-import { NButton, NInput, NIcon, NUpload } from 'naive-ui'
+import { NButton, NInput, NIcon, NUpload, NModal } from 'naive-ui'
 import { SearchRound as Search } from '@vicons/material'
 
 let showAdd = ref(false)
+let showDelete = ref(false)
+let showUpdate = ref(false)
+let showSpin = ref(false)
 let source = ref("")
 let kind = ref("")
 let target = ref("")
+let sentence = ref("")
 let node: Node[] = reactive([])
 let data: Relationship[] = reactive([])
 
@@ -43,6 +47,46 @@ onMounted(() =>
     })
 })
 
+const AddData = () =>
+{
+    var _source = source.value
+    var _kind = kind.value
+    var _target = target.value
+    var _sentence = sentence.value
+
+    if (_kind != "") {
+        axios.post(`https://localhost:7183/Knowledge/AddRelation?SourceNodeName=${_source}&Type=${_kind}&TargetNodeName=${_target}`)
+    }
+    else if (_source != "") {
+        axios.post(`https://localhost:7183/Knowledge/AddNode?name=${_source}`)
+    }
+    if (_sentence != "") {
+        showSpin.value = true
+        axios.post(`https://localhost:7183/Knowledge/SingleSentence?Sentence=${_sentence}`).then(function ()
+        {
+            showSpin.value = false
+        })
+    }
+    RefreshData()
+    ShowGraph()
+}
+const DeleteData = () =>
+{
+    var _source = source.value
+    var _target = target.value
+    axios.delete(`https://localhost:7183/Knowledge/Delete?SourceNodeName=${_source}&TargetNodeName=${_target}`)
+    RefreshData()
+    ShowGraph()
+}
+const UpdateData = () =>
+{
+    var _source = source.value
+    var _kind = kind.value
+    var _target = target.value
+    axios.put(`https://localhost:7183/Knowledge/Update?SourceNodeName=${_source}&Type=${_kind}&TargetNodeName=${_target}`)
+    RefreshData()
+    ShowGraph()
+}
 const SearchData = () =>
 {
     var _source = source.value
@@ -60,6 +104,16 @@ const SearchData = () =>
             }
             ShowGraph()
         })
+    })
+}
+const RefreshData = () =>
+{
+    data.length = 0
+    axios.get("https://localhost:7183/Knowledge/SearchAllRelationship").then(function (res)
+    {
+        for (let i = 0; i < res.data.length; i++) {
+            data.push({ source: res.data[i].source, kind: res.data[i].kind, target: res.data[i].target })
+        }
     })
 }
 
@@ -180,7 +234,27 @@ const ShowGraph = () =>
             <n-button type="info" ghost @click="showAdd = true">新增</n-button>
         </div>
     </div>
-    <div id="main"></div>
+
+    <n-modal v-model:show="showAdd" preset="dialog" title="添加新数据" :showIcon=true positive-text="确定！" negative-text="再想想"
+        @positive-click="AddData">
+        <n-input type="text" placeholder="请输入源头" v-model:value="source" />
+        <n-input type="text" placeholder="请输入种类" show-password-on="mousedown" v-model:value="kind" />
+        <n-input type="text" placeholder="请输入目标" v-model:value="target" />
+        <n-input type="text" placeholder="或者给我一句话" v-model:value="sentence" />
+    </n-modal>
+    <n-modal v-model:show="showDelete" preset="dialog" title="真的要删除吗？" :showIcon=true positive-text="确定！"
+        negative-text="再想想" @positive-click="DeleteData">
+    </n-modal>
+    <n-modal v-model:show="showUpdate" preset="dialog" title="请谨慎修改" :showIcon=true positive-text="确定！"
+        negative-text="再想想" @positive-click="UpdateData">
+        <n-input type="text" placeholder="请输入源头" :disabled=true v-model:value="source" />
+        <n-input type="text" placeholder="请输入种类" show-password-on="mousedown" v-model:value="kind" />
+        <n-input type="text" placeholder="请输入目标" :disabled=true v-model:value="target" />
+    </n-modal>
+
+    <n-spin size="large" description="操作中，请稍后" :show="showSpin">
+        <div id="main"></div>
+    </n-spin>
 </template>
 
 <style>

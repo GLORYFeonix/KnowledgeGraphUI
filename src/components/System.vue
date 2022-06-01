@@ -43,7 +43,7 @@ const menuOptions: MenuOption[] = [
             ),
         key: '用户管理',
         icon: renderIcon(UserIcon),
-        disabled: isAdmin.value
+        // disabled: isAdmin.value
     },
     {
         label: () =>
