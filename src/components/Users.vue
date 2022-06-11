@@ -140,7 +140,7 @@ const RefreshUser = () =>
 </script>
 
 <template>
-    <div class="header">
+    <div class="users-header">
         <div class="left">
             <n-input clearable placeholder="账号" v-model:value="userName" />
             <n-input clearable placeholder="名字" v-model:value="name" />
@@ -173,24 +173,24 @@ const RefreshUser = () =>
 </template>
 
 <style scoped>
-.header {
+.users-header {
     display: flex;
     height: 54px;
     width: 100%;
     justify-content: space-between;
 }
 
-.header .left {
+.users-header .left {
     width: 40%;
     display: flex;
 }
 
-.header .left .n-input {
+.users-header .left .n-input {
     width: 45%;
     margin: 10px;
 }
 
-.header .right .n-button {
+.users-header .right .n-button {
     margin: 10px;
 }
 

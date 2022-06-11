@@ -166,7 +166,7 @@ const ShowGraph = () =>
                     force: { layoutAnimation: true },
                     roam: true,
                     draggable: true,
-                    symbolSize: 35,
+                    symbolSize: 20,
                     lineStyle: {
                         width: 5,
                         curveness: 0
@@ -252,9 +252,7 @@ const ShowGraph = () =>
         <n-input type="text" placeholder="请输入目标" :disabled=true v-model:value="target" />
     </n-modal>
 
-    <n-spin size="large" description="操作中，请稍后" :show="showSpin">
-        <div id="main"></div>
-    </n-spin>
+    <div id="main"></div>
 </template>
 
 <style>
